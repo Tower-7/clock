@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>clock</title>
+	<link rel="shortcut icon" href="clock.ico" />
+	<style>
+		.wrap{
+			margin: 0 auto;
+			margin-top: 250px;
+			text-align: center;
+		}
+		#date{
+			margin: 0 auto;
+			font-family: Arial;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div id="date">
+		</div>
+		<canvas id="canvas"  height="600px" width="600px"></canvas>
+	</div>
+	<script src="clock.js"></script>
+	<script>
+		window.onload = function(){
+			var oDiv = document.getElementById('date')
+var dom = document.getElementById('canvas')
+var ctx =dom.getContext('2d')
+var width = ctx.canvas.width;
+var height = dom.height;
+var r = width/2;
+var DPI = 2*Math.PI
+var ratio = width/200
+ctx.translate(r,r)
+function drawBackground(){
+	ctx.save()
+	ctx.beginPath()
+	ctx.lineWidth = 10*ratio
+	var lineR = ctx.lineWidth/2
+	ctx.arc(0,0,r-lineR,0,DPI,false)
+	ctx.stroke()
+	var hourNumber = [3,4,5,6,7,8,9,10,11,12,1,2]
+	hourNumber.forEach(function(number,i){
+		ctx.beginPath()
+		var rad = DPI/12*i
+		var x = Math.cos(rad)*(r-30*ratio)
+		var y = Math.sin(rad)*(r-30*ratio)
+		ctx.font = 18*ratio+"px Arial"
+		ctx.textAlign = "center"
+		ctx.textBaseline = "middle"
+		ctx.fillText(number,x,y)
+	})
+	for(var i=0;i<60;i++){
+		var rad = DPI/60*i
+		var x = Math.cos(rad)*(r-18*ratio)
+		var y = Math.sin(rad)*(r-18*ratio)
+		ctx.beginPath()
+		if(i%5==0){
+			ctx.fillStyle = "#000"
+			ctx.arc(x,y,2*ratio,0,DPI)
+		}
+		else{
+			ctx.fillStyle = "#ccc"
+			ctx.arc(x,y,2*ratio,0,DPI)
+		}
+		ctx.fill();
+	}
+}
+
+function drawHour(hour,minute){
+	ctx.save()
+	var rad = DPI/12*hour
+	var mrad = DPI/12/60*minute
+	ctx.rotate(rad+mrad)
+	ctx.beginPath()
+	ctx.moveTo(0,10*ratio)
+	ctx.lineTo(0,-r/2)
+	ctx.lineWidth=6*ratio
+	ctx.lineCap="round"
+	ctx.stroke()
+	ctx.restore()
+}
+function drawminute(minute){
+	ctx.save()
+	var rad = DPI/60*minute
+	ctx.rotate(rad)
+	ctx.beginPath()
+	ctx.moveTo(0,10*ratio)
+	ctx.lineTo(0,-r/7*4)
+	ctx.lineWidth = 4*ratio
+	ctx.lineCap = "round"
+	ctx.stroke()
+	ctx.restore()
+}
+function drawSecond(second){
+	ctx.save()
+	var rad = DPI/60*second
+	ctx.rotate(rad)
+	ctx.beginPath()
+	ctx.lineWidth=1
+	ctx.moveTo(2*ratio,10*ratio)
+	ctx.lineTo(-2*ratio,10*ratio)
+	ctx.lineTo(-1*ratio,-r/3*2)
+	ctx.lineTo(1*ratio,-r/3*2)
+	ctx.lineTo(2*ratio,10*ratio)
+	ctx.fillStyle = "red"
+	ctx.fill()
+	ctx.restore()
+}
+function dot(){
+	ctx.save()
+	ctx.beginPath()
+	ctx.arc(0,0,3*ratio,0,DPI)
+	ctx.fillStyle = "#ccc"
+	ctx.fill()
+	ctx.restore()
+}
+
+function drawCell(){
+	ctx.save()
+	ctx.beginPath()
+	ctx.moveTo(15*ratio,50*ratio)
+	ctx.lineTo(-15*ratio,50*ratio)
+	ctx.lineTo(-15*ratio,30*ratio)
+	ctx.lineTo(15*ratio,30*ratio)
+	ctx.lineTo(15*ratio,50*ratio)
+	ctx.lineWidth=2
+	ctx.strokeStyle = 'black'
+	ctx.stroke()
+	ctx.restore()
+}
+function drawDay(date){
+	ctx.save()
+	ctx.beginPath() 
+	ctx.fillStyle = 'black'
+	ctx.fillText(date,0,40*ratio)
+	ctx.restore()
+}
+function clock(){
+	var date = new Date()
+	var hour = date.getHours();
+	if(hour>12){
+		hour = hour-12
+	}
+	var year = date.getFullYear()
+	var month = date.getMonth()+1
+	var day = date.getDay()
+	var minute = date.getMinutes()
+	var second = date.getSeconds()
+	var date = date.getDate()
+	drawBackground()
+	drawHour(hour,minute)
+	drawminute(minute)
+	drawSecond(second)
+	drawDay(date)
+	time(year,month,date,day)
+	dot()
+	drawCell()
+}
+function draw(){
+	ctx.clearRect(-r,-r,2*r,2*r)
+	clock()
+	ctx.restore()
+}
+setInterval(draw,1000)
+
+ function time(year,month,date,day){
+ 	var week = ['日','一','二','三','四','五','六']
+ 	oDiv.innerHTML=year+'年'+month+'月'+date+'日 星期'+week[day]
+ 	oDiv.style.fontSize = 18*ratio+'px'
+ }
+
+
+		}
+	</script>
+</body>
+</html>
